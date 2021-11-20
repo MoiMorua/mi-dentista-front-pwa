@@ -1,20 +1,19 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch,Redirect } from 'react-router-dom'
 import PrivateRouter from './private/PrivateRoute'
-import {HomePage,LoginPage,ServicePage, PageNotFound} from '../pages'
+import LoginRoute from './login/LoginRoute'
+import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage} from '../pages'
 
 const AppRouter = () => {
     return (
         <>
             <Router>
                 <Switch>
-                    <Route exact path='/'>
-                        <HomePage />
-                    </Route>
-                    <Route exact path='/login'>
-                        <LoginPage />
-                    </Route>                    
+                    <LoginRoute exact path='/login' component={LoginPage}/>                        
+                    <PrivateRouter exact path='/' component={HomePage}/>                                            
                     <PrivateRouter exact path="/servicios" component={ServicePage} />
+                    <PrivateRouter exact path="/agregar-cliente" component={AddClientPage} />
+                    {/* <PrivateRouter exact path="/citas" component={App} /> */}
                     <Route path='/404' component={PageNotFound} />
                     <Redirect from='*' to='/404' />
                 </Switch>

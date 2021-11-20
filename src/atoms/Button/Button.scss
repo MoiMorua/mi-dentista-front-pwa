@@ -1,0 +1,77 @@
+.Button {
+    height: 50px;
+    min-width: 250px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    gap: 5px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    background-color: #1BD15D;
+    color: #fff;
+    &:hover {
+        cursor: pointer;
+        &.redirect {
+            a {
+                color: #fff;
+            }
+        }
+    }
+    &.redirect {
+        a {
+            color: #fff;
+        }
+    }
+}
+
+.IconButton {
+    height: 40px;
+    width: 40px;
+    border-radius: 10px;
+    border: none;
+    background-color: #1BD15D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.DialogButton__container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.DialogButton {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    background-color: #1BD15D;
+    color: #fff;
+    border: none;
+    margin: 0;
+    &:hover {
+        cursor: pointer;
+        &.redirect {
+            a {
+                color: #fff;
+            }
+        }
+    }
+    &.redirect {
+        a {
+            color: #fff;
+        }
+    }
+    &.simple {
+        background-color: transparent;
+        color: black;
+    }
+}

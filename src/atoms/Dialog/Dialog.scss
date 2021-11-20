@@ -1,0 +1,9 @@
+.Dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 2px solid rgba($color: #6f6f6f, $alpha: 1.0);
+    .Dialog__header {
+        font-size: 10px;
+    }
+}

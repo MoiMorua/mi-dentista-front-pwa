@@ -1,0 +1,30 @@
+.Navbar {
+    height: 90px;
+    width: 100%;
+    background-color: #fff;
+    // display: flex;
+    // flex-direction: row;
+    // justify-content: space-around;
+    // align-items: center;
+    .module_name {
+        margin: 0;
+        font-weight: 100;
+    }
+    ul {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        gap: 30px;
+        height: 100%;
+        padding: 0 30px;
+        margin: 0;
+        list-style: none;
+        a {
+            text-decoration: none;
+            color: #000;
+            &:hover {
+                color: #000;
+            }
+        }
+    }
+}

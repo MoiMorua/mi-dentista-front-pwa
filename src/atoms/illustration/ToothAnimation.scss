@@ -1,0 +1,38 @@
+#Tooth {
+    animation: toothDance 1s ease-in infinite alternate;
+    transform-origin: bottom;
+    transform-box: fill-box;
+}
+
+#Dental_floss {
+    animation: toothDance 1.8s ease-in infinite alternate;
+    transform-origin: bottom;
+    transform-box: fill-box;
+}
+
+#Brush {
+    animation: brushDance 3s ease-in-out infinite alternate;
+    transform-origin: bottom;
+    transform-box: fill-box;
+}
+
+@keyframes brushDance {
+    0% {
+        transform: rotate(-5deg) scale(0.95);
+    }
+    50% {
+        transform: rotate(0deg) scale(1);
+    }
+    100% {
+        transform: rotate(6deg) scale(0.95);
+    }
+}
+
+@keyframes toothDance {
+    from {
+        transform: rotateY(0deg) scale(1);
+    }
+    to {
+        transform: rotateY(20deg) scale(1.05);
+    }
+}

@@ -1,0 +1,13 @@
+.Copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 5rem;
+    border: 4px dashed rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+    width: 100%;
+    &:hover {
+        cursor: pointer;
+    }
+}
