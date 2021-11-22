@@ -5,92 +5,154 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
+import TablePagination from '@mui/material/TablePagination';
 import Paper from '@mui/material/Paper'
-import { BiGhost } from "react-icons/bi"
-import './ServicePage.scss'
 import Input from '../../atoms/Input/Input.jsx'
 import Service from '../../requests/Service'
-import {IconButton,DialogButton} from '../../atoms/Button'
-import { IoEllipsisHorizontalSharp } from "react-icons/io5";
 import Modal from '../../components/Modal/Modal'
 import AddIcon from '../../atoms/icon/AddIcon'
-import Dialog from '../../atoms/Dialog/Dialog'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { BiGhost } from "react-icons/bi"
+import {IconButton} from '../../atoms/Button'
 import { BiPencil } from 'react-icons/bi'
 import { RiDeleteBinLine } from "react-icons/ri"
 import {BsCheckAll} from 'react-icons/bs'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import { AddServiceForm } from '../../components/Forms'
-import { ms, s, m, h, d } from 'time-convert'
-
+import {  m, h } from 'time-convert'
+import { useSelector,useDispatch } from 'react-redux'
+import {selectServiceList,initServices} from '../../reducers/ServiceReducer'
+import { filter } from 'smart-array-filter'
+import {selectServicePage,setCurrentService,setModal,setModalEmpty,setForm} from '../../reducers/GenericReducer'
+import './ServicePage.scss'
 
 const ServicePage = () => {
 
-    const [serviceList, setServiceList] = useState([])
-    const [search, setSearch] = useState('')    
-    const [editMode, setEditMode] = useState(false)
-    const [currentService , setCurrentService] = useState(null)
-    const CustomSwal = withReactContent(Swal)
+    const dispatch = useDispatch()
+    const {modal,currentService,form} = useSelector(selectServicePage)    
 
-    const [showAddModal, setShowAddModal] = useState(false)
+    const {serviceList ,serviceSearch} = useSelector(selectServiceList)
+    console.log( useSelector(selectServiceList))
+    const CustomSwal = withReactContent(Swal)        
+    const [search, setSearch] = useState('')        
+    
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [afterFirstLoad,setAfterFirstLoad] = useState(false)
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            if(search.length > 0){                
+                dispatchServices(serviceList)
+            }
+            else if(afterFirstLoad){
+                // dispatch(initServices())
+                dispatchServices(serviceList)
+            }
+
+        }, 1000)
+    
+        return () => clearTimeout(delayDebounceFn)
+    }, [search])
+
+    const dispatchServices = (list)=>{                
+        if(search.length>0){
+            dispatch(initServices(
+                {
+                    serviceSearch: filter( list,{keywords:search})
+                }
+            ))
+        }else{
+            dispatch(initServices(
+                {
+                    serviceList: list,
+                    serviceSearch:list
+                }
+            ))
+        }
+    }
 
     const getServiceList = async ()=>{
-        let response = await Service.getServiceList()
         
+        let response = await Service.getServiceList()
+        console.log(response)
         response = response.map(service => {            
-            let {duration} = service
-            // console.log(duration)
-            if(duration>=60){
-                service.duration =  m.to(h,m)(duration)
-            }else{
-                service.duration =  [0,duration]
+            let {duration,format} = service.systemformat[0]
+            let [duration_h,duration_m] = duration.split(':')
+            duration_m = parseInt(duration_m)
+            duration_h = parseInt(duration_h)
+            console.log({duration_h,duration_m})
+            return {
+                id: service.id,
+                duration: "0"+duration,
+                displayDuration: 
+                    duration_h===0?
+                        `${duration_m} minutos`
+                        :`${duration_h} horas ${duration_m>0?
+                            `y ${duration_m} minutos`
+                            :''
+                    } `,
+                name: service.name,
+                price: service.price,
+                estatus: service.estatus===1?'Activo':'Inactivo',
+                systemformat: {
+                    duration:service.systemformat[0].duration
+                },
             }
-            console.log(service.duration)
-            return service
         })
-
-        setServiceList(response)
+        
+        dispatchServices(response)
+        setAfterFirstLoad(true)
     }
 
     useEffect(() => {
-        getServiceList()
+        getServiceList()        
     }, [])
 
-    const saveService = async (service) => {
-        console.log(service)        
-        const [hours,minutes] = service.duration.split(':')
-        service.duration =  m.from(h,m)(hours,minutes)
-        const response = await Service.saveService(service)
-        console.log(response)        
+    const saveService = async () => {
+        let data = form
+        const [hours,minutes] = data.duration.split(':')
+        data.duration =  m.from(h,m)(hours,minutes)
+        const response = await Service.saveService(data)        
         hideModal()
+        dispatch(setForm({
+            name:'',
+            duration:'',
+            price:''
+        }))
         getServiceList()
     }
 
     const editService = async (service) => {
         console.log(service)        
-        const response = await Service.editService({...currentService,...service})
-        console.log(response)
+        const response = await Service.editService({...currentService,...service})        
         hideModal()
-        getServiceList()
+        dispatch(initServices(response))
     }
 
     const deactivateService = async (service) => {        
         const response = await Service.deactivateService(service)
-        console.log(response)
+
         getServiceList()
     }
     
     const activateService = async (service) => {        
-        const response = await Service.activateService(service)
-        console.log(response)
+        const response = await Service.activateService(service)        
         getServiceList()
     }
 
     const hideModal = () => {        
         document.body.style.overflow = 'auto';     
-        setShowAddModal(false)
-        setEditMode(false)
-        setCurrentService(null)
+        dispatch(setModalEmpty())
     } 
 
     return (
@@ -101,10 +163,10 @@ const ServicePage = () => {
                 </header>            
                 <div className="Service-search-add">                
                     <Input placeholder="Buscar" value={search} onChange={({target:{value}})=>{setSearch(value)}}/>
-                    <IconButton Icon={<AddIcon color="#fff" height="24" width="24"/>} onClick={()=>setShowAddModal(true)}/>
+                    <IconButton Icon={<AddIcon color="#fff" height="24" width="24"/>} onClick={()=>dispatch(setModal('ADD'))}/>
                 </div>
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableContainer component={Paper} sx={{maxHeight:500}}>
+                    <Table sx={{ minWidth: 650 }} stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
                                 <TableCell>Nombre</TableCell>
@@ -115,8 +177,11 @@ const ServicePage = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                        {serviceList.length>0?
-                            serviceList.map((row, id) => (                            
+                        {
+                            serviceSearch.length>0?
+                            serviceSearch
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)    
+                            .map((row, id) => (                            
                                 <TableRow key={id}>
                                     <TableCell component="th" scope="row">
                                         {row.name}
@@ -125,7 +190,7 @@ const ServicePage = () => {
                                         {row.duration[0]==0?`${row.duration[1]} minutos`:`${row.duration[0]} horas ${row.duration[0]<0?`y ${row.duration[1]} minutos`:''} `}
                                     </TableCell>
                                     <TableCell align="right">{row.price}</TableCell>
-                                    <TableCell align="right">{row.estatus==1?'Activo':'Inactivo'}</TableCell>
+                                    <TableCell align="right">{row.estatus}</TableCell>
                                     <TableCell align="right">                                                                        
                                         <div className="align-center-flex">
                                             <IconButton 
@@ -134,12 +199,17 @@ const ServicePage = () => {
                                                 }}
                                                 Icon={<BiPencil color="#fff" height="60" width="60"/>} 
                                                 onClick={()=>{
-                                                    setEditMode(true)
-                                                    setCurrentService(row)
+                                                    dispatch(setModal('EDIT'))
+                                                    dispatch(setCurrentService(row))
+                                                    dispatch(setForm({
+                                                        name:row.name,
+                                                        duration:'0'+row.systemformat.duration,
+                                                        price:row.price
+                                                    }))
                                                 }}
                                             />
                                             {
-                                                row.estatus==1?
+                                                row.estatus==='Activo'?
                                                 <IconButton 
                                                     customStyle={{
                                                         backgroundColor: '#ff5d52',
@@ -166,7 +236,11 @@ const ServicePage = () => {
                                 <TableRow>
                                     <TableCell colSpan={4} align="center">
                                         <p className="no-service-available">
-                                            No hay servicios registrados
+                                            {
+                                                search.length>0 && serviceList.length>0?
+                                                'No se encontraron resultados'
+                                                :'No hay servicios registrados'
+                                            }
                                             <BiGhost color='#252525' size='24px'/>
                                         </p>
                                     </TableCell>
@@ -176,11 +250,26 @@ const ServicePage = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>            
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 15]}
+                        component="div"
+                        count={serviceList.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
             </div>
             {
-                (showAddModal || editMode) &&(
-                <Modal show={true} title={`${editMode?'Editar':'Agregar'} servicio`} closeModal={hideModal}>
-                    <AddServiceForm method={editMode?'edit':'add'} {...currentService?{incomingData:currentService}:{}} saveService={saveService} editService={editService} closeModal={hideModal}/>
+                modal ==='ADD' &&(
+                <Modal  title='Agregar servicio'>
+                    <AddServiceForm  saveService={saveService} editService={editService}/>
+                </Modal>)
+            }
+            {
+                modal === 'EDIT' &&(
+                <Modal  title='Editar servicio'>
+                    <AddServiceForm  saveService={saveService} editService={editService}/>
                 </Modal>)
             }
         </>

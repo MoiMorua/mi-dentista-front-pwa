@@ -1,23 +1,15 @@
 import { Send } from 'iconsax-react'
 import React,{useState} from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import {setForm,setFormErrors, selectForm, selectFormErrors,setModalEmpty} from '../../../reducers/GenericReducer'
 import Input from '../../../atoms/Input/Input'
 import '../Forms.scss'
 
 const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,method="add"}) => {
     
-    const [data,setData] = useState({
-                                name: incomingData===null?'':incomingData.name,
-                                duration: incomingData===null?'':'0'+incomingData.duration[0]+':'+incomingData.duration[1],
-                                price: incomingData===null?'':incomingData.price,
-                            })
-    
-    const [errors,setErrors] = useState({
-                                name: '',
-                                duration: '',
-                                price: ''
-                            })
-
-    let {name,duration,price} = data
+    const dispatch = useDispatch()
+    const { name,duration,price } = useSelector(selectForm)
+    const { nameError,durationError,priceError } = useSelector(selectFormErrors)        
     
     let checkErrors = () => {
         let errorsDetected = {}
@@ -38,30 +30,24 @@ const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,me
             hasErrors = true
         }
         else errorsDetected.price = ''
-        setErrors(errorsDetected)        
+        dispatch(setFormErrors(errorsDetected))
     }
 
     let handleChange = (e) => {
         let {name,value} = e.target
-        console.log(name,value)
-        setData({...data,[name]:value})        
+        console.log(name,value)        
+        dispatch(setForm({[name]:value}))
     }
 
     let handleSubmit = (e) => {
         e.preventDefault()
         if(checkErrors()) return
-
-
-        if(method=="add"){
-            saveService(data)
-        }else{
-            editService(data)
-        }
+        saveService()
     }
 
     const hideModal = () => {        
-        document.body.style.overflow = 'auto';     
-        closeModal()   
+        dispatch(setModalEmpty())
+        document.body.style.overflow = 'auto';             
     } 
 
     return (
@@ -75,9 +61,9 @@ const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,me
                 type="text" 
                 name="name"
                 placeholder="Nombre del servicio"/>
-                {errors.name?
+                {nameError?
                     <label htmlFor="name" className="Form__error">
-                        {errors.name}
+                        {nameError}
                     </label>
                     :
                 null}
@@ -89,11 +75,12 @@ const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,me
                     handleChange(e)
                 }}
                 type="time" 
+                format="HH:mm"
                 name="duration"
                 placeholder="Duración (minutos)"/> 
-                {errors.duration?
+                {durationError?
                     <label htmlFor="duration" className="Form__error">
-                        {errors.duration}
+                        {durationError}
                     </label>
                     :
                 null}               
@@ -107,15 +94,14 @@ const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,me
                 type="number" 
                 name="price"
                 placeholder="Precio ($)"/>   
-                {errors.price?
+                {durationError?
                     <label htmlFor="price" className="Form__error">
-                        {errors.price}
+                        {durationError}
                     </label>
                     :
                 null}                     
             </div>
             <div className="Form__buttons">
-                
                 <button className="Form__submit" type="submit">{method=='add'?'Agregar':'Editar'}</button>
                 <button className="Form__cancel" onClick={()=>hideModal()}>Cancelar</button>
             </div>

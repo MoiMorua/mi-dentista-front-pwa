@@ -5,22 +5,23 @@ import Navbar from './components/Navbar/Navbar';
 import AppRouter from './router/AppRouter';
 import Sidebar from './components/Sidebar/Sidebar';
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Provider } from 'react-redux';
+import {store} from './store';
 
 function App() {
   return (
-    <Router>
-      <div className="App">      
-        <header className="App-header">
-          <Route path='' component={Navbar}/>          
-        </header>
-        {/* <aside className="App-sidebar">
-          <Route path='' component={Sidebar}/>          
-        </aside> */}
-        <div className="App-container">
-          <AppRouter />
+    <Provider store={store}>
+      <Router>
+        <div className="App">      
+          <header className="App-header">
+            <Route path='' component={Navbar}/>          
+          </header>          
+          <div className="App-container">
+            <AppRouter />
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </Provider>
   );
 }
 

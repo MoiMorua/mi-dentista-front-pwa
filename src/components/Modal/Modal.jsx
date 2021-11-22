@@ -1,14 +1,18 @@
 import React,{useState,useEffect} from 'react'
+import {useSelector,useDispatch} from 'react-redux'
+import {selectServicePage,setModalEmpty} from '../../reducers/GenericReducer'
 import './Modal.scss'
 
 const Modal = ({show,children,title,closeModal}) => {    
     
+    const dispatch = useDispatch()
+    const modal = useSelector(selectServicePage)
 
     useEffect(() => {
         const close = (e) => {
-          if(e.keyCode === 27){
-            closeModal()
-            hideModal()
+          if(e.keyCode === 27){            
+            dispatch(setModalEmpty())
+            document.body.style.overflow = 'auto';        
           }
         }
         window.addEventListener('keyup', close)
@@ -18,11 +22,7 @@ const Modal = ({show,children,title,closeModal}) => {
 
     useEffect(()  => {
         document.body.style.overflow = 'hidden';
-    },[]);
-
-    const hideModal = () => {        
-        document.body.style.overflow = 'auto';        
-    }    
+    },[]);    
 
     return (
         <div className="Modal__container">
