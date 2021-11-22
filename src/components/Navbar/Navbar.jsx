@@ -9,9 +9,7 @@ import User from '../../requests/User'
 
 const Navbar = (props) => {
 
-    const { location } = props;
-
-    console.log(location)
+    const { location } = props;    
 
     if (location.pathname.match(/login/) && !User.getToken()) {
         console.log('test')

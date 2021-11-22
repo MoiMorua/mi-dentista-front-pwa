@@ -16,13 +16,11 @@ const LoginPage = () => {
 
         let response = await User.login(email, password)
         
-        console.log(response)
-        // return
         if(response.status) {
-            User.storeToken(response)
+            User.storeToken({...response,date: new Date()})
             window.location.href = '/servicios'
         }        
-    
+        
     }
 
     return (

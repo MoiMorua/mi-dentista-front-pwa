@@ -18,15 +18,17 @@ export default {
         ).then(response => response.json())
 
     },
-    storeToken: ({ user, token, expires_on }) => {
+    storeToken: ({ user, token, expires_on, date }) => {
         localStorage.setItem('user', user)
         localStorage.setItem('token', token)
         localStorage.setItem('expires_on', expires_on)
+        localStorage.setItem('date', date)
     },
     deleteToken: () => {
         localStorage.removeItem('user')
         localStorage.removeItem('token')
         localStorage.removeItem('expires_on')
+        localStorage.removeItem('date')
     },
     getToken: () => {
         return localStorage.getItem('token')
