@@ -27,17 +27,7 @@ const AppRouter = () => {
             dispatch(logout())            
         }
                 
-    })
-
-    React.useEffect(()=>{
-        window.addEventListener('click',(e)=>{
-
-        })
-
-        return ()=>{
-            window.removeEventListener('click',(e)=>{})
-        }
-    })
+    })    
 
     return (
         <>
