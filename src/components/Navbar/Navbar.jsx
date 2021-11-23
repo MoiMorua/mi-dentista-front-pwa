@@ -27,7 +27,7 @@ const Navbar = (props) => {
                     <a href="/agregar-cliente">Agregar cliente</a>
                 </li>
                 <li>
-                    <a href="">Citas</a>
+                    <a href="/citas">Citas</a>
                 </li>
                 <li>
                     <a href="">Mi cuenta</a>

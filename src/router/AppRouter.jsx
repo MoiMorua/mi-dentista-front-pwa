@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch,Redirect } from 'react-router-dom'
 import PrivateRouter from './private/PrivateRoute'
 import LoginRoute from './login/LoginRoute'
-import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage} from '../pages'
+import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage, AppointmentPage} from '../pages'
 import {useDispatch} from 'react-redux'
 import { selectUser,login,logout } from '../reducers/UserReducer'
 
@@ -19,7 +19,7 @@ const AppRouter = () => {
                     <PrivateRouter exact path='/' component={HomePage}/>                                            
                     <PrivateRouter exact path="/servicios" component={ServicePage} />
                     <PrivateRouter exact path="/agregar-cliente" component={AddClientPage} />
-                    {/* <PrivateRouter exact path="/citas" component={App} /> */}
+                    <PrivateRouter exact path="/citas" component={AppointmentPage} />
                     <Route path='/404' component={PageNotFound} />
                     <Redirect from='*' to='/404' />
                 </Switch>
