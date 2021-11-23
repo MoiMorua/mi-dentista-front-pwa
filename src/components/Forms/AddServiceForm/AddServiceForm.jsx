@@ -1,14 +1,15 @@
 import { Send } from 'iconsax-react'
 import React,{useState} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import {setForm,setFormErrors, selectForm, selectFormErrors,setModalEmpty} from '../../../reducers/GenericReducer'
+import {setForm,setFormErrors, selectForm, selectFormErrors,setModalEmpty,selectServicePage} from '../../../reducers/GenericReducer'
 import Input from '../../../atoms/Input/Input'
 import '../Forms.scss'
 
 const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,method="add"}) => {
     
     const dispatch = useDispatch()
-    const { name,duration,price } = useSelector(selectForm)
+    const { id,name,duration,price } = useSelector(selectForm)
+    const { modal } = useSelector(selectServicePage)
     const { nameError,durationError,priceError } = useSelector(selectFormErrors)        
     
     let checkErrors = () => {
@@ -42,7 +43,13 @@ const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,me
     let handleSubmit = (e) => {
         e.preventDefault()
         if(checkErrors()) return
-        saveService()
+        debugger
+        if(modal==="ADD") {
+            saveService()
+        }else{
+            editService()
+            
+        }        
     }
 
     const hideModal = () => {        
@@ -102,7 +109,7 @@ const AddServiceForm = ({closeModal,saveService,editService,incomingData=null,me
                 null}                     
             </div>
             <div className="Form__buttons">
-                <button className="Form__submit" type="submit">{method=='add'?'Agregar':'Editar'}</button>
+                <button className="Form__submit" type="submit">{modal==='ADD'?'Agregar':'Editar'}</button>
                 <button className="Form__cancel" onClick={()=>hideModal()}>Cancelar</button>
             </div>
         </form>

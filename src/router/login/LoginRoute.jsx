@@ -11,7 +11,8 @@ const LoginRoute = ({ tokenP, rol, component: Component, ...rest }) => {
       {...rest}
       component={(props) =>
         user
-        ? (
+        ? 
+        (
             <Redirect
             to='/'            
           />

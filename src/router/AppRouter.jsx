@@ -10,24 +10,6 @@ import { selectUser,login,logout } from '../reducers/UserReducer'
 const AppRouter = () => {
     const dispatch = useDispatch()
     // const dispatch = useDispatch();
-  
-    React.useEffect(()=>{
-        
-        if(localStorage.getItem('token')&&localStorage.getItem('expires_on')&&localStorage.getItem('user')&&localStorage.getItem('date')){
-            dispatch(login())      
-            
-        }
-        let diff = Math.abs(new Date(localStorage.getItem('date')) - new Date())
-        let minutes = Math.floor((diff/1000))
-        if(minutes>=1800){
-            dispatch(logout())            
-            return
-        }
-        if(!localStorage.getItem('date')){
-            dispatch(logout())            
-        }
-                
-    })    
 
     return (
         <>

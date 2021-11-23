@@ -31,8 +31,7 @@ const ServicePage = () => {
     const dispatch = useDispatch()
     const {modal,currentService,form} = useSelector(selectServicePage)    
 
-    const {serviceList ,serviceSearch} = useSelector(selectServiceList)
-    console.log( useSelector(selectServiceList))
+    const {serviceList ,serviceSearch} = useSelector(selectServiceList)    
     const CustomSwal = withReactContent(Swal)        
     const [search, setSearch] = useState('')        
     
@@ -91,16 +90,16 @@ const ServicePage = () => {
             duration_m = parseInt(duration_m)
             duration_h = parseInt(duration_h)
             console.log({duration_h,duration_m})
+            console.log(duration_h===0)
             return {
                 id: service.id,
                 duration: "0"+duration,
                 displayDuration: 
-                    duration_h===0?
-                        `${duration_m} minutos`
-                        :`${duration_h} horas ${duration_m>0?
-                            `y ${duration_m} minutos`
-                            :''
-                    } `,
+                    duration_h===0?`${duration_m} minutos`:
+                    duration_h>0?`${duration_h} horas 
+                        ${
+                            duration_m>0?`y ${duration_m} minutos`:''
+                        }`:'',
                 name: service.name,
                 price: service.price,
                 estatus: service.estatus===1?'Activo':'Inactivo',
@@ -132,9 +131,11 @@ const ServicePage = () => {
         getServiceList()
     }
 
-    const editService = async (service) => {
-        console.log(service)        
-        const response = await Service.editService({...currentService,...service})        
+    const editService = async () => {        
+        debugger
+        const [hours,minutes] = form.duration.split(':')
+        form.duration =  m.from(h,m)(hours,minutes)
+        const response = await Service.editService({...currentService,...form})        
         hideModal()
         dispatch(initServices(response))
     }
@@ -187,7 +188,7 @@ const ServicePage = () => {
                                         {row.name}
                                     </TableCell>
                                     <TableCell align="right">
-                                        {row.duration[0]==0?`${row.duration[1]} minutos`:`${row.duration[0]} horas ${row.duration[0]<0?`y ${row.duration[1]} minutos`:''} `}
+                                        {row.displayDuration}
                                     </TableCell>
                                     <TableCell align="right">{row.price}</TableCell>
                                     <TableCell align="right">{row.estatus}</TableCell>
@@ -201,7 +202,7 @@ const ServicePage = () => {
                                                 onClick={()=>{
                                                     dispatch(setModal('EDIT'))
                                                     dispatch(setCurrentService(row))
-                                                    dispatch(setForm({
+                                                    dispatch(setForm({ 
                                                         name:row.name,
                                                         duration:'0'+row.systemformat.duration,
                                                         price:row.price
