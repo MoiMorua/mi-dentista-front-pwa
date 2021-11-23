@@ -137,7 +137,7 @@ const ServicePage = () => {
         form.duration =  m.from(h,m)(hours,minutes)
         const response = await Service.editService({...currentService,...form})        
         hideModal()
-        dispatch(initServices(response))
+        getServiceList()
     }
 
     const deactivateService = async (service) => {        
