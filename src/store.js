@@ -1,13 +1,16 @@
 import { createStore, combineReducers } from 'redux';
-import { ServiceReducer } from './reducers/ServiceReducer';
+
 import { GenericReducer } from './reducers/GenericReducer';
+import { ServiceReducer } from './reducers/ServiceReducer';
 import { UserReducer } from './reducers/UserReducer'
+import { AppointmentsReducer } from './reducers/AppointmentReducer'
 
 
 const rootReducer = combineReducers({
     services: ServiceReducer,
     generic: GenericReducer,
-    user: UserReducer
+    user: UserReducer,
+    appointments: AppointmentsReducer
 })
 
 

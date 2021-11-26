@@ -23,7 +23,6 @@ const CustomTabs = ({options,onChange}) => {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
-        console.log(newValue)
         setValue(newValue)
         onChange(newValue)
     };
@@ -31,15 +30,12 @@ const CustomTabs = ({options,onChange}) => {
     return (
         <div className="CustomTabs">
             <Tabs 
-            
-            TabIndicatorProps={{style: {backgroundColor: 'white'}}}
-            // TextColor="primary"
+            TabIndicatorProps={{style: {backgroundColor: 'white'}}}            
             value={value} 
             onChange={handleChange}             
             >
                 {options.map((option, index) => (
-                    <Tab theme={theme} key={index} label={option.name} disableRipple={true}/>
-                    // <p>{option.name}</p>
+                    <Tab theme={theme} key={index} label={option.name} disableRipple={true}/>                    
                 ))}
             </Tabs>
         </div>
