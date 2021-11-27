@@ -5,6 +5,7 @@ import PageNotFound from "./PageNotFound/PageNotFound"
 import AddClientPage from "./AddClientPage/AddClientPage"
 import AppointmentPage from "./AppointmentPage/AppointmentPage"
 import UnavailableDays from "./UnavailableDays/UnavailableDays"
+import UsersPage from "./UsersPage/UsersPage"
 
 export {
     HomePage,
@@ -13,5 +14,6 @@ export {
     PageNotFound,
     AddClientPage,
     AppointmentPage,
-    UnavailableDays
+    UnavailableDays,
+    UsersPage
 }

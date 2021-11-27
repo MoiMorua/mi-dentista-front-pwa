@@ -1,0 +1,30 @@
+.AddClient-button {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    height: 40px;
+    padding: 0 3rem;
+    border: none;
+    background-color: #1BD15D;
+    color: white;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s ease-in-out;
+    &:hover {
+        background-color: #0cbf4e;
+        color: white;
+        cursor: pointer;
+    }
+    &.loading {
+        padding: 0;
+        max-width: 60px;
+        height: 60px;
+        &:hover {
+            background-color: #1BD15D;
+            color: white;
+            cursor: auto;
+        }
+    }
+}

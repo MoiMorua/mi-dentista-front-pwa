@@ -9,7 +9,6 @@ import Copy from '../../components/Copy/Copy';
 const AddClientPage = () => {
 
     const [isLoading, setIsLoading] = React.useState(false)
-    const [accessToken, setAccessToken] = React.useState('')    
     
     const COPY_TOKEN_SWAL = withReactContent(Swal)
 

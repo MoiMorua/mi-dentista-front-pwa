@@ -9,7 +9,10 @@ import TablePagination from '@mui/material/TablePagination';
 import Paper from '@mui/material/Paper'
 import Input from '../../atoms/Input/Input.jsx'
 import Service from '../../requests/Service'
+import Users from '../../requests/Users'
+import User from '../../requests/User'
 import Modal from '../../components/Modal/Modal'
+import UserHistory from '../../components/UserHistory/UserHistory.jsx'
 import AddIcon from '../../atoms/icon/AddIcon'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -17,29 +20,40 @@ import { BiGhost } from "react-icons/bi"
 import {IconButton} from '../../atoms/Button'
 import { BiPencil } from 'react-icons/bi'
 import { RiDeleteBinLine } from "react-icons/ri"
+import { AiOutlineCalendar } from 'react-icons/ai'
 import {BsCheckAll} from 'react-icons/bs'
-import { AddServiceForm } from '../../components/Forms'
+import { AddUsersForm } from '../../components/Forms'
+import HistoryList  from '../../components/HistoryList/HistoryList'
 import {  m, h } from 'time-convert'
 import { useSelector,useDispatch } from 'react-redux'
-import {selectServiceList,initServices} from '../../reducers/ServiceReducer'
+import {selectUsersList,initUsers} from '../../reducers/UsersReducer'
 import { filter } from 'smart-array-filter'
-import {selectServicePage,setCurrentService,setModal,setModalEmpty,setForm} from '../../reducers/GenericReducer'
-import './ServicePage.scss'
+import {selectUsersPage, selectServicePage,setCurrentUser,setModal,setModalEmpty,setFormUser} from '../../reducers/GenericReducer'
+import './UsersPage.scss'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Loading from '../../atoms/icon/Loading'
+import Copy from '../../components/Copy/Copy';
+import './style.scss'
+import { useLocation } from 'react-router'
 
-const ServicePage = () => {
+const UsersPage = () => {
+
+    const location  = useLocation();    
 
     const dispatch = useDispatch()
-    const {modal,currentService,form} = useSelector(selectServicePage)    
+    const {currentUsers,form} = useSelector(selectUsersPage)   
+    const {modal} = useSelector(selectServicePage)
 
-    const {serviceList ,serviceSearch} = useSelector(selectServiceList)    
+    const {usersList ,usersSearch} = useSelector(selectUsersList)    
     const CustomSwal = withReactContent(Swal)        
     const [search, setSearch] = useState('')        
     
     const [page, setPage] = useState(0);
+    const [flagEmply, setFlagEmply] = useState(false)
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [afterFirstLoad,setAfterFirstLoad] = useState(false)
+    const [showHistory, setShowHistory] = useState(false)
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -53,11 +67,11 @@ const ServicePage = () => {
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             if(search.length > 0){                
-                dispatchServices(serviceList)
+                dispatchUsers(usersList)
             }
             else if(afterFirstLoad){
-                // dispatch(initServices())
-                dispatchServices(serviceList)
+                // dispatch(initUsers())
+                dispatchUsers(usersList)
             }
 
         }, 1000)
@@ -65,67 +79,68 @@ const ServicePage = () => {
         return () => clearTimeout(delayDebounceFn)
     }, [search])
 
-    const dispatchServices = (list)=>{                
+    const dispatchUsers = (list)=>{                
         if(search.length>0){
-            dispatch(initServices(
+            dispatch(initUsers(
                 {
-                    serviceSearch: filter( list,{keywords:search})
+                    usersSearch: filter( list,{keywords:search})
                 }
             ))
         }else{
-            dispatch(initServices(
+            dispatch(initUsers(
                 {
-                    serviceList: list,
-                    serviceSearch:list
+                    usersList: list,
+                    usersSearch:list
                 }
             ))
         }
     }
 
-    const getServiceList = async ()=>{
+    const getUsersList = async ()=>{
+        let flag = false 
+        if(location.pathname.match(/empleados/)){
+            flag = true
+            setFlagEmply(true)
+        }
         
-        let response = await Service.getServiceList()
-        console.log(response)
-        response = response.map(service => {            
-            let {duration,format} = service.systemformat[0]
-            let [duration_h,duration_m] = duration.split(':')
-            duration_m = parseInt(duration_m)
-            duration_h = parseInt(duration_h)
-            console.log({duration_h,duration_m})
-            console.log(duration_h===0)
-            return {
-                id: service.id,
-                duration: "0"+duration,
-                displayDuration: 
-                    duration_h===0?`${duration_m} minutos`:
-                    duration_h>0?`${duration_h} horas 
-                        ${
-                            duration_m>0?`y ${duration_m} minutos`:''
-                        }`:'',
-                name: service.name,
-                price: service.price,
-                estatus: service.estatus===1?'Activo':'Inactivo',
-                systemformat: {
-                    duration:service.systemformat[0].duration
-                },
-            }
+        let response = await Users.getAllUsers()
+        
+        response = response.map(user => {            
+
+                return {
+                    id: user.id,
+                    name: user.user_name,
+                    lastName: user.last_name,
+                    phone: user.phone,
+                    email: user.email,
+                    status: user.user_status===1?'Activo':'Inactivo',
+                    role: user.user_role
+                }
+            
         })
-        
-        dispatchServices(response)
+
+        if(flag){
+            response = response.filter(user => user.role == 1)
+        } else {
+            response = response.filter(user => user.role == 0)
+        }
+
+
+        dispatchUsers(response)
         setAfterFirstLoad(true)
+        
     }
 
     useEffect(() => {
-        getServiceList()        
+        getUsersList()        
     }, [])
 
-    const saveService = async () => {
+    const saveUser = async () => {
         let data = form
-        const [hours,minutes] = data.duration.split(':')
-        data.duration =  m.from(h,m)(hours,minutes)
-        const response = await Service.saveService(data)        
+        let accessCode = await User.getAccessToken()
+        const response = await Users.saveUser(data, accessCode.access_code, flagEmply)        
         hideModal()
-        toast.success('Servicio registrado con exito', {
+        toast.success('Usuario registrado con exito', {
             position: "bottom-left",
             autoClose: 2500,
             hideProgressBar: false,
@@ -134,40 +149,42 @@ const ServicePage = () => {
             draggable: true,
             progress: undefined,
         });
-        dispatch(setForm({
+
+        dispatch(setFormUser({
             name:'',
-            duration:'',
-            price:''
+            lastName:'',
+            phone:'',
+            email:'',
+            password:'',
         }))
-        getServiceList()
+        getUsersList()
     }
 
-    const editService = async () => {        
-        const [hours,minutes] = form.duration.split(':')
-        form.duration =  m.from(h,m)(hours,minutes)
-        const response = await Service.editService({...currentService,...form})        
-        toast.success('Servicio editado con exito', {
-            position: "bottom-left",
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
+    const editUser = async () => {      
+        const response = await Users.editUser({...currentUsers,...form})        
         hideModal()
-        getServiceList()
+        toast.success('Usuario editado con exito', {
+                position: "bottom-left",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+        });
+
+        getUsersList()
     }
 
-    const deactivateService = async (service) => {        
-        const response = await Service.deactivateService(service)
+    const deactivateUser = async (user) => {        
+        const response = await Users.deactivateUser(user)
 
-        getServiceList()
+        getUsersList()
     }
     
-    const activateService = async (service) => {        
-        const response = await Service.activateService(service)        
-        getServiceList()
+    const activateUser = async (user) => {        
+        const response = await Users.activateUser(user)        
+        getUsersList()
     }
 
     const hideModal = () => {        
@@ -175,14 +192,57 @@ const ServicePage = () => {
         dispatch(setModalEmpty())
     } 
 
+
+    const [isLoading, setIsLoading] = React.useState(false)
+    
+    const COPY_TOKEN_SWAL = withReactContent(Swal)
+
+    const requestAccessToken = async () => {
+        setIsLoading(true)
+
+        let response = await User.getAccessToken()
+    
+        if(response.message === 'Token expired.'){
+            User.deleteToken()
+            window.location.reload(false);
+        }
+                
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        COPY_TOKEN_SWAL.fire({
+            title: <p>¡Listo!</p>,
+            html: <Copy text={response.access_code}/>,
+            confirmButtonText: 'Cerrar',
+            textColor: '#fff',
+            confirmButtonColor: '#1BD15D',        
+        })
+        setIsLoading(false)
+    }
+
     return (
         <>
             <div className="ServicePage">            
                 <header className="Service-header">
-                    <h1>Servicios</h1>
+                    <h1>{!flagEmply ? "Pacientes" : "Empleados" }</h1>
                 </header>            
                 <div className="Service-search-add">                
                     <Input placeholder="Buscar" value={search} onChange={({target:{value}})=>{setSearch(value)}}/>
+                    {
+                        !flagEmply && ( 
+                        <button 
+                    className={`AddClient-button ${isLoading?'loading':''}`}
+                    onClick={() => requestAccessToken()}
+                    disabled={isLoading}
+                    >
+                    {
+                        isLoading?
+                        <Loading height="auto" width="100%" color="#fff"/>
+                        :
+                        "Generar código de acceso"
+                    }
+                    </button>
+                    )
+                    }
                     <IconButton Icon={<AddIcon color="#fff" height="24" width="24"/>} onClick={()=>dispatch(setModal('ADD'))}/>
                 </div>
                 <TableContainer component={Paper} sx={{maxHeight:500}}>
@@ -190,16 +250,17 @@ const ServicePage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Nombre</TableCell>
-                                <TableCell align="right">Duración</TableCell>
-                                <TableCell align="right">Precio&nbsp;(MXN)</TableCell>
-                                <TableCell align="right">Estado</TableCell>
+                                <TableCell align="right">Apellidos</TableCell>
+                                <TableCell align="right">Telefono</TableCell>
+                                <TableCell align="right">Correo</TableCell>
+                                <TableCell align="right">Estatus</TableCell>
                                 <TableCell align="right"></TableCell>                        
                             </TableRow>
                         </TableHead>
                         <TableBody>
                         {
-                            serviceSearch.length>0?
-                            serviceSearch
+                            usersSearch.length>0?
+                            usersSearch
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)    
                             .map((row, id) => (                            
                                 <TableRow key={id}>
@@ -207,10 +268,11 @@ const ServicePage = () => {
                                         {row.name}
                                     </TableCell>
                                     <TableCell align="right">
-                                        {row.displayDuration}
+                                        {row.lastName}
                                     </TableCell>
-                                    <TableCell align="right">{row.price}</TableCell>
-                                    <TableCell align="right">{row.estatus}</TableCell>
+                                    <TableCell align="right">{row.phone}</TableCell>
+                                    <TableCell align="right">{row.email}</TableCell>
+                                    <TableCell align="right">{row.status}</TableCell>
                                     <TableCell align="right">                                                                        
                                         <div className="align-center-flex">
                                             <IconButton 
@@ -220,22 +282,23 @@ const ServicePage = () => {
                                                 Icon={<BiPencil color="#fff" height="60" width="60"/>} 
                                                 onClick={()=>{
                                                     dispatch(setModal('EDIT'))
-                                                    dispatch(setCurrentService(row))
-                                                    dispatch(setForm({ 
-                                                        name:row.name,
-                                                        duration:'0'+row.systemformat.duration,
-                                                        price:row.price
+                                                    dispatch(setCurrentUser(row))
+                                                    dispatch(setFormUser({ 
+                                                        name: row.name,
+                                                        lastName: row.lastName,
+                                                        email: row.email,
+                                                        phone: row.phone,
                                                     }))
                                                 }}
                                             />
                                             {
-                                                row.estatus==='Activo'?
+                                                row.status==='Activo'?
                                                 <IconButton 
                                                     customStyle={{
                                                         backgroundColor: '#ff5d52',
                                                     }}
                                                     Icon={<RiDeleteBinLine color="#fff" height="60" width="60"/>} 
-                                                    onClick={()=>{deactivateService({_id:row.id})}}
+                                                    onClick={()=>{deactivateUser({_id:row.id})}}
                                                 />
                                                 :
                                                 <IconButton 
@@ -243,9 +306,20 @@ const ServicePage = () => {
                                                         backgroundColor: '#1BD15D',
                                                     }}
                                                     Icon={<BsCheckAll color="#fff" height="60" width="60"/>} 
-                                                    onClick={()=>{activateService({_id:row.id})}}
+                                                    onClick={()=>{activateUser({_id:row.id})}}
                                                 />
                                             }
+                                             {
+                                                !flagEmply && (
+                                                    <IconButton 
+                                                    customStyle={{
+                                                        backgroundColor: '#007BFF',
+                                                    }}
+                                                    Icon={<AiOutlineCalendar color="#fff" height="60" width="60"/>} 
+                                                    onClick={()=>{setShowHistory(true); dispatch(setCurrentUser(row))}}
+                                            />
+                                                )
+                                             }
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -257,9 +331,9 @@ const ServicePage = () => {
                                     <TableCell colSpan={4} align="center">
                                         <p className="no-service-available">
                                             {
-                                                search.length>0 && serviceList.length>0?
+                                                search.length>0 && usersList.length>0?
                                                 'No se encontraron resultados'
-                                                :'No hay servicios registrados'
+                                                :'No hay registros'
                                             }
                                             <BiGhost color='#252525' size='24px'/>
                                         </p>
@@ -273,7 +347,7 @@ const ServicePage = () => {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 15]}
                         component="div"
-                        count={serviceList.length}
+                        count={usersList.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -282,16 +356,23 @@ const ServicePage = () => {
             </div>
             {
                 modal ==='ADD' &&(
-                <Modal  title='Agregar servicio'>
-                    <AddServiceForm  saveService={saveService} editService={editService}/>
+                <Modal  title={!flagEmply ? 'Agregar paciente' : 'Agregar Empleado'}>
+                    <AddUsersForm  saveUser={saveUser} editService={editUser}/>
                 </Modal>)
             }
             {
                 modal === 'EDIT' &&(
-                <Modal  title='Editar servicio'>
-                    <AddServiceForm  saveService={saveService} editService={editService}/>
+                <Modal  title={!flagEmply ? 'Editar paciente' : 'Editar Empleado'}>
+                    <AddUsersForm  saveUser={saveUser} editService={editUser}/>
                 </Modal>)
             }
+            {
+                showHistory &&(
+                <UserHistory  title='Historial del paciente'>
+                    <HistoryList  setShowHistory={setShowHistory}/>
+                </UserHistory>)
+            }
+
             <ToastContainer
                 position="bottom-left"
                 autoClose={2500}
@@ -303,8 +384,9 @@ const ServicePage = () => {
                 draggable
                 pauseOnHover
             />
+
         </>
     )
 }
 
-export default ServicePage
+export default UsersPage

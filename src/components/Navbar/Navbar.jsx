@@ -11,7 +11,6 @@ import User from '../../requests/User'
 const Navbar = (props) => {
 
     const { location } = props;    
-
     if (location.pathname.match(/login/) && !User.getToken()) {
         console.log('test')
         return null;
@@ -35,11 +34,14 @@ const Navbar = (props) => {
                 <li>
                     <a href="/dias-inhabiles">Dias inhabiles</a>
                 </li>
-                <li>
-                    <a href="/agregar-cliente">Agregar cliente</a>
+                <li>                    
+                    <a href="/citas">Citas</a>
                 </li>
                 <li>
-                    <a href="/citas">Citas</a>
+                    <a href="/pacientes">Pacientes</a>
+                </li>
+                <li>
+                    <a href="/empleados">Empleados</a>
                 </li>
                 <li>
                     <button className="logout-btn" onClick={()=>logout()}>

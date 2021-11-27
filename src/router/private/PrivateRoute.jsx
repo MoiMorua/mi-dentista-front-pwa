@@ -13,7 +13,7 @@ const PrivateRoute = ({ tokenP, rol, component: Component, ...rest }) => {
       component={(props) =>
         localStorage.getItem('token')&&localStorage.getItem('expires_on')&&localStorage.getItem('user')&&localStorage.getItem('date')
         ? (
-          <Component tokenP={tokenP} rol = {rol} />
+          <Component tokenP={tokenP} props={props} rol = {rol} />
         ) : (
           <Redirect
             to='/login'            

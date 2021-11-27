@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch,Redirect } from 'react-router-do
 import PrivateRouter from './private/PrivateRoute'
 import LoginRoute from './login/LoginRoute'
 import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage, AppointmentPage, UnavailableDays } from '../pages'
+import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage, AppointmentPage, UsersPage} from '../pages'
 import {useDispatch} from 'react-redux'
 
 const AppRouter = () => {
@@ -19,6 +20,8 @@ const AppRouter = () => {
                     <PrivateRouter exact path="/dias-inhabiles" component={UnavailableDays} />
                     <PrivateRouter exact path="/agregar-cliente" component={AddClientPage} />
                     <PrivateRouter exact path="/citas" component={AppointmentPage} />
+                    <PrivateRouter exact path="/pacientes" component={UsersPage} />
+                    <PrivateRouter exact path="/empleados" component={UsersPage} />
                     <Route path='/404' component={PageNotFound} />
                     <Redirect from='*' to='/404' />
                 </Switch>
