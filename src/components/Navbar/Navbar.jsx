@@ -10,7 +10,6 @@ import User from '../../requests/User'
 const Navbar = (props) => {
 
     const { location } = props;    
-
     if (location.pathname.match(/login/) && !User.getToken()) {
         console.log('test')
         return null;
@@ -28,6 +27,9 @@ const Navbar = (props) => {
                 </li>
                 <li>
                     <a href="/pacientes">Pacientes</a>
+                </li>
+                <li>
+                    <a href="/empleados">Empleados</a>
                 </li>
                 <li>
                     <a href="">Mi cuenta</a>

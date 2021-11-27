@@ -35,8 +35,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../../atoms/icon/Loading'
 import Copy from '../../components/Copy/Copy';
 import './style.scss'
+import { useLocation } from 'react-router'
 
 const UsersPage = () => {
+
+    const location  = useLocation();    
 
     const dispatch = useDispatch()
     const {currentUsers,form} = useSelector(selectUsersPage)   
@@ -47,6 +50,7 @@ const UsersPage = () => {
     const [search, setSearch] = useState('')        
     
     const [page, setPage] = useState(0);
+    const [flagEmply, setFlagEmply] = useState(false)
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [afterFirstLoad,setAfterFirstLoad] = useState(false)
     const [showHistory, setShowHistory] = useState(false)
@@ -93,6 +97,11 @@ const UsersPage = () => {
     }
 
     const getUsersList = async ()=>{
+        let flag = false 
+        if(location.pathname.match(/empleados/)){
+            flag = true
+            setFlagEmply(true)
+        }
         
         let response = await Users.getAllUsers()
         
@@ -108,7 +117,15 @@ const UsersPage = () => {
                     role: user.user_role
                 }
             
-        }).filter(user => user.role == 0)
+        })
+
+        if(flag){
+            response = response.filter(user => user.role == 1)
+        } else {
+            response = response.filter(user => user.role == 0)
+        }
+
+
         dispatchUsers(response)
         setAfterFirstLoad(true)
         
@@ -121,7 +138,7 @@ const UsersPage = () => {
     const saveUser = async () => {
         let data = form
         let accessCode = await User.getAccessToken()
-        const response = await Users.saveUser(data, accessCode.access_code)        
+        const response = await Users.saveUser(data, accessCode.access_code, flagEmply)        
         hideModal()
         toast.success('Usuario registrado con exito', {
             position: "bottom-left",
@@ -206,11 +223,13 @@ const UsersPage = () => {
         <>
             <div className="ServicePage">            
                 <header className="Service-header">
-                    <h1>Pacientes</h1>
+                    <h1>{!flagEmply ? "Pacientes" : "Empleados" }</h1>
                 </header>            
                 <div className="Service-search-add">                
                     <Input placeholder="Buscar" value={search} onChange={({target:{value}})=>{setSearch(value)}}/>
-                    <button 
+                    {
+                        !flagEmply && ( 
+                        <button 
                     className={`AddClient-button ${isLoading?'loading':''}`}
                     onClick={() => requestAccessToken()}
                     disabled={isLoading}
@@ -222,6 +241,8 @@ const UsersPage = () => {
                         "Generar código de acceso"
                     }
                     </button>
+                    )
+                    }
                     <IconButton Icon={<AddIcon color="#fff" height="24" width="24"/>} onClick={()=>dispatch(setModal('ADD'))}/>
                 </div>
                 <TableContainer component={Paper} sx={{maxHeight:500}}>
@@ -288,13 +309,17 @@ const UsersPage = () => {
                                                     onClick={()=>{activateUser({_id:row.id})}}
                                                 />
                                             }
-                                             <IconButton 
+                                             {
+                                                !flagEmply && (
+                                                    <IconButton 
                                                     customStyle={{
                                                         backgroundColor: '#007BFF',
                                                     }}
                                                     Icon={<AiOutlineCalendar color="#fff" height="60" width="60"/>} 
                                                     onClick={()=>{setShowHistory(true); dispatch(setCurrentUser(row))}}
                                             />
+                                                )
+                                             }
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -308,7 +333,7 @@ const UsersPage = () => {
                                             {
                                                 search.length>0 && usersList.length>0?
                                                 'No se encontraron resultados'
-                                                :'No hay pacientes registrados'
+                                                :'No hay registros'
                                             }
                                             <BiGhost color='#252525' size='24px'/>
                                         </p>
@@ -331,13 +356,13 @@ const UsersPage = () => {
             </div>
             {
                 modal ==='ADD' &&(
-                <Modal  title='Agregar paciente'>
+                <Modal  title={!flagEmply ? 'Agregar paciente' : 'Agregar Empleado'}>
                     <AddUsersForm  saveUser={saveUser} editService={editUser}/>
                 </Modal>)
             }
             {
                 modal === 'EDIT' &&(
-                <Modal  title='Editar paciente'>
+                <Modal  title={!flagEmply ? 'Editar paciente' : 'Editar Empleado'}>
                     <AddUsersForm  saveUser={saveUser} editService={editUser}/>
                 </Modal>)
             }

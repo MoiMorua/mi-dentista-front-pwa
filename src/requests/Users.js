@@ -13,7 +13,7 @@ export default {
         ).then(response => response.json())
     },
 
-    saveUser: (user, accessCode) => {
+    saveUser: (user, accessCode, flagEmply) => {
         return fetch(
             "http://oscarhendrix10.pythonanywhere.com/user/add", {
                 method: "POST",
@@ -27,7 +27,7 @@ export default {
                  password: user.password,
                  access_code: accessCode,
                  phone: user.phone,
-                 role: 'Customer'
+                 role: flagEmply ? 'admin' : 'Customer',
              }),
             }
         ).then(response => response.json())
