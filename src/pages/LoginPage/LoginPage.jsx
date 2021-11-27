@@ -23,7 +23,7 @@ const LoginPage = () => {
         if(response.status) {
             User.storeToken({...response,date: new Date()})
             dispatch(login())
-            window.location.href = '/servicios'
+            window.location.href = '/citas'
         }        
         
     }

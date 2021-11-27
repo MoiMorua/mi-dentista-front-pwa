@@ -4,6 +4,7 @@ import './Navbar.scss'
 import { ButtonRedirect,IconButton } from '../../atoms/Button'
 import {MdOutlineAccountCircle} from 'react-icons/md'
 import { useLocation } from 'react-router-dom'
+import { HiLogout } from 'react-icons/hi'
 import User from '../../requests/User'
 
 
@@ -14,6 +15,14 @@ const Navbar = (props) => {
     if (location.pathname.match(/login/) && !User.getToken()) {
         console.log('test')
         return null;
+    }
+    
+    const logout = ()=>{
+        localStorage.removeItem('date')
+        localStorage.removeItem('user')
+        localStorage.removeItem('expires_on')
+        localStorage.removeItem('token')
+        window.location.href = '/login'
     }
 
     return (
@@ -33,7 +42,10 @@ const Navbar = (props) => {
                     <a href="/citas">Citas</a>
                 </li>
                 <li>
-                    <a href="">Mi cuenta</a>
+                    <button className="logout-btn" onClick={()=>logout()}>
+                        Salir
+                        <HiLogout color="#fff"/>
+                    </button>
                 </li>
             </ul>
         </nav>
