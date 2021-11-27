@@ -30,6 +30,9 @@ const Navbar = (props) => {
                     <a href="/citas">Citas</a>
                 </li>
                 <li>
+                    <a href="/users">Pacientes</a>
+                </li>
+                <li>
                     <a href="">Mi cuenta</a>
                 </li>
             </ul>

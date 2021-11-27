@@ -1,0 +1,36 @@
+.ServicePage {
+    gap: 15px;
+}
+
+.Service-header {
+    h1 {
+        margin: 25px;
+        text-align: left;
+    }
+}
+
+.no-service-available {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    gap: .8rem;
+    text-align: center;
+}
+
+.Service-search-add {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.button-options {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
