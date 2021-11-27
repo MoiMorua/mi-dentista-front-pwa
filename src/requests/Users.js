@@ -99,4 +99,23 @@ export default {
                 console.log(error);
             })
     },
+
+    getHistory: (user) => {
+        let response = fetch(
+            "http://oscarhendrix10.pythonanywhere.com/appointment/get_by_user", {
+                method: "POST",
+                headers: new Headers({
+                      "Content-Type": "application/json",
+                      "token": localStorage.getItem('token')
+                }),
+                body: JSON.stringify({
+                    user_id: user.id
+                }),
+            }
+        ).then(response => response.json())
+         .catch(err => console.error(err));
+
+        return response;
+    }
+
 }

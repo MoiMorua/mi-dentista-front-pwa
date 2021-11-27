@@ -25,6 +25,8 @@ import {selectServiceList,initServices} from '../../reducers/ServiceReducer'
 import { filter } from 'smart-array-filter'
 import {selectServicePage,setCurrentService,setModal,setModalEmpty,setForm} from '../../reducers/GenericReducer'
 import './ServicePage.scss'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ServicePage = () => {
 
@@ -123,6 +125,15 @@ const ServicePage = () => {
         data.duration =  m.from(h,m)(hours,minutes)
         const response = await Service.saveService(data)        
         hideModal()
+        toast.success('Servicio registrado con exito', {
+            position: "bottom-left",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
         dispatch(setForm({
             name:'',
             duration:'',
@@ -132,10 +143,18 @@ const ServicePage = () => {
     }
 
     const editService = async () => {        
-        debugger
         const [hours,minutes] = form.duration.split(':')
         form.duration =  m.from(h,m)(hours,minutes)
         const response = await Service.editService({...currentService,...form})        
+        toast.success('Servicio editado con exito', {
+            position: "bottom-left",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
         hideModal()
         getServiceList()
     }
@@ -273,6 +292,17 @@ const ServicePage = () => {
                     <AddServiceForm  saveService={saveService} editService={editService}/>
                 </Modal>)
             }
+            <ToastContainer
+                position="bottom-left"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     )
 }

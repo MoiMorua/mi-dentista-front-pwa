@@ -18,9 +18,8 @@ const AppRouter = () => {
                     <LoginRoute exact path='/login' component={LoginPage}/>                        
                     <PrivateRouter exact path='/' component={HomePage}/>                                            
                     <PrivateRouter exact path="/servicios" component={ServicePage} />
-                    <PrivateRouter exact path="/agregar-cliente" component={AddClientPage} />
                     <PrivateRouter exact path="/citas" component={AppointmentPage} />
-                    <PrivateRouter exact path="/users" component={UsersPage} />
+                    <PrivateRouter exact path="/pacientes" component={UsersPage} />
                     <Route path='/404' component={PageNotFound} />
                     <Redirect from='*' to='/404' />
                 </Switch>

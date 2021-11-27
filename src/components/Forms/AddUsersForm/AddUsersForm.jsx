@@ -4,8 +4,11 @@ import { useSelector, useDispatch } from 'react-redux'
 import {setFormUser,setFormErrors, selectFormUsers, selectFormErrorsUsers, setModalEmpty,selectServicePage} from '../../../reducers/GenericReducer'
 import Input from '../../../atoms/Input/Input'
 import '../Forms.scss'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddUserForm = ({closeModal, saveUser, editService, incomingData=null, method="add"}) => {
+
     
     const dispatch = useDispatch()
     const { id, name, lastName, email, phone, password } = useSelector(selectFormUsers)
@@ -49,7 +52,7 @@ const AddUserForm = ({closeModal, saveUser, editService, incomingData=null, meth
         e.preventDefault()
         if(checkErrors()) return
         if(modal==="ADD") {
-            saveUser()
+            saveUser()    
         }else{
             editService()
             

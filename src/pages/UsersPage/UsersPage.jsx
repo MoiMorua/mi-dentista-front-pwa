@@ -12,6 +12,7 @@ import Service from '../../requests/Service'
 import Users from '../../requests/Users'
 import User from '../../requests/User'
 import Modal from '../../components/Modal/Modal'
+import UserHistory from '../../components/UserHistory/UserHistory.jsx'
 import AddIcon from '../../atoms/icon/AddIcon'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -19,14 +20,21 @@ import { BiGhost } from "react-icons/bi"
 import {IconButton} from '../../atoms/Button'
 import { BiPencil } from 'react-icons/bi'
 import { RiDeleteBinLine } from "react-icons/ri"
+import { AiOutlineCalendar } from 'react-icons/ai'
 import {BsCheckAll} from 'react-icons/bs'
 import { AddUsersForm } from '../../components/Forms'
+import HistoryList  from '../../components/HistoryList/HistoryList'
 import {  m, h } from 'time-convert'
 import { useSelector,useDispatch } from 'react-redux'
 import {selectUsersList,initUsers} from '../../reducers/UsersReducer'
 import { filter } from 'smart-array-filter'
 import {selectUsersPage, selectServicePage,setCurrentUser,setModal,setModalEmpty,setFormUser} from '../../reducers/GenericReducer'
 import './UsersPage.scss'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loading from '../../atoms/icon/Loading'
+import Copy from '../../components/Copy/Copy';
+import './style.scss'
 
 const UsersPage = () => {
 
@@ -41,6 +49,7 @@ const UsersPage = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [afterFirstLoad,setAfterFirstLoad] = useState(false)
+    const [showHistory, setShowHistory] = useState(false)
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -114,6 +123,16 @@ const UsersPage = () => {
         let accessCode = await User.getAccessToken()
         const response = await Users.saveUser(data, accessCode.access_code)        
         hideModal()
+        toast.success('Usuario registrado con exito', {
+            position: "bottom-left",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+
         dispatch(setFormUser({
             name:'',
             lastName:'',
@@ -127,6 +146,16 @@ const UsersPage = () => {
     const editUser = async () => {      
         const response = await Users.editUser({...currentUsers,...form})        
         hideModal()
+        toast.success('Usuario editado con exito', {
+                position: "bottom-left",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+        });
+
         getUsersList()
     }
 
@@ -146,6 +175,33 @@ const UsersPage = () => {
         dispatch(setModalEmpty())
     } 
 
+
+    const [isLoading, setIsLoading] = React.useState(false)
+    
+    const COPY_TOKEN_SWAL = withReactContent(Swal)
+
+    const requestAccessToken = async () => {
+        setIsLoading(true)
+
+        let response = await User.getAccessToken()
+    
+        if(response.message === 'Token expired.'){
+            User.deleteToken()
+            window.location.reload(false);
+        }
+                
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        COPY_TOKEN_SWAL.fire({
+            title: <p>¡Listo!</p>,
+            html: <Copy text={response.access_code}/>,
+            confirmButtonText: 'Cerrar',
+            textColor: '#fff',
+            confirmButtonColor: '#1BD15D',        
+        })
+        setIsLoading(false)
+    }
+
     return (
         <>
             <div className="ServicePage">            
@@ -154,6 +210,18 @@ const UsersPage = () => {
                 </header>            
                 <div className="Service-search-add">                
                     <Input placeholder="Buscar" value={search} onChange={({target:{value}})=>{setSearch(value)}}/>
+                    <button 
+                    className={`AddClient-button ${isLoading?'loading':''}`}
+                    onClick={() => requestAccessToken()}
+                    disabled={isLoading}
+                    >
+                    {
+                        isLoading?
+                        <Loading height="auto" width="100%" color="#fff"/>
+                        :
+                        "Generar código de acceso"
+                    }
+                    </button>
                     <IconButton Icon={<AddIcon color="#fff" height="24" width="24"/>} onClick={()=>dispatch(setModal('ADD'))}/>
                 </div>
                 <TableContainer component={Paper} sx={{maxHeight:500}}>
@@ -220,6 +288,13 @@ const UsersPage = () => {
                                                     onClick={()=>{activateUser({_id:row.id})}}
                                                 />
                                             }
+                                             <IconButton 
+                                                    customStyle={{
+                                                        backgroundColor: '#007BFF',
+                                                    }}
+                                                    Icon={<AiOutlineCalendar color="#fff" height="60" width="60"/>} 
+                                                    onClick={()=>{setShowHistory(true); dispatch(setCurrentUser(row))}}
+                                            />
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -266,6 +341,25 @@ const UsersPage = () => {
                     <AddUsersForm  saveUser={saveUser} editService={editUser}/>
                 </Modal>)
             }
+            {
+                showHistory &&(
+                <UserHistory  title='Historial del paciente'>
+                    <HistoryList  setShowHistory={setShowHistory}/>
+                </UserHistory>)
+            }
+
+            <ToastContainer
+                position="bottom-left"
+                autoClose={2500}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+
         </>
     )
 }
