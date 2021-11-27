@@ -4,13 +4,15 @@ import { GenericReducer } from './reducers/GenericReducer';
 import { ServiceReducer } from './reducers/ServiceReducer';
 import { UserReducer } from './reducers/UserReducer'
 import { AppointmentsReducer } from './reducers/AppointmentReducer'
+import { UnavailableDaysReducer } from './reducers/UnavailableDaysReducer'
 
 
 const rootReducer = combineReducers({
     services: ServiceReducer,
     generic: GenericReducer,
     user: UserReducer,
-    appointments: AppointmentsReducer
+    appointments: AppointmentsReducer,
+    unavailableDays: UnavailableDaysReducer
 })
 
 

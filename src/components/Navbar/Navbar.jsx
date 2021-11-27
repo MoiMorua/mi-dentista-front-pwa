@@ -24,6 +24,9 @@ const Navbar = (props) => {
                     <a href="/servicios">Servicios</a>
                 </li>
                 <li>
+                    <a href="/dias-inhabiles">Dias inhabiles</a>
+                </li>
+                <li>
                     <a href="/agregar-cliente">Agregar cliente</a>
                 </li>
                 <li>

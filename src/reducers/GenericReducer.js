@@ -13,7 +13,6 @@ const initialState = {
             nameError: '',
             priceError: '',
             durationError: '',
-
         }
     }
 }
@@ -91,8 +90,6 @@ export const setFormErrors = (formErrors) => {
         payload: formErrors
     }
 }
-
-
 
 export const selectServicePage = (state) => state.generic.servicePage
 export const selectForm = (state) => state.generic.servicePage.form
