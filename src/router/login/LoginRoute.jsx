@@ -5,16 +5,16 @@ import {selectUser} from '../../reducers/UserReducer'
 import {useSelector} from 'react-redux'
 
 const LoginRoute = ({ tokenP, rol, component: Component, ...rest }) => {
-  const user = useSelector(selectUser)
+  console.log(localStorage.getItem('token')?'true':'false')
   return (
     <Route
       {...rest}
       component={(props) =>
-        user
+        localStorage.getItem('token')
         ? 
         (
-            <Redirect
-            to='/'            
+          <Redirect
+            to='/citas'            
           />
         ) 
         : 

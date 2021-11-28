@@ -1,0 +1,15 @@
+<svg width="780" height="299" viewBox="0 0 780 299" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.400001 251V186.2L123.2 11H209.2V183H240V251H209.2V299H130V251H0.400001ZM136 99.4L80.8 183H136V99.4ZM272.163 148.6C272.163 102.733 281.496 66.6 300.163 40.2C318.829 13.8 348.163 0.599979 388.163 0.599979C428.163 0.599979 457.496 13.8 476.163 40.2C495.096 66.6 504.563 102.733 504.563 148.6C504.563 195 495.229 231.4 476.563 257.8C457.896 284.2 428.429 297.4 388.163 297.4C347.896 297.4 318.429 284.2 299.763 257.8C281.363 231.4 272.163 195 272.163 148.6ZM426.963 148.6C426.963 124.6 424.429 106.333 419.363 93.8C414.296 81 403.896 74.6 388.163 74.6C372.429 74.6 362.029 81 356.963 93.8C351.896 106.333 349.363 124.6 349.363 148.6C349.363 173.133 351.763 191.8 356.562 204.6C361.629 217.133 372.163 223.4 388.163 223.4C404.163 223.4 414.563 217.133 419.363 204.6C424.429 191.8 426.963 173.133 426.963 148.6ZM539.853 251V186.2L662.653 11H748.653V183H779.453V251H748.653V299H669.453V251H539.853ZM675.453 99.4L620.253 183H675.453V99.4Z" 
+fill="url(#skyGradient)" />
+    <defs>
+    <linearGradient id="skyGradient" x1="100%" y1="100%">
+        <stop offset="0%" stop-color="lightblue" stop-opacity=".5">
+        <animate attributeName="stop-color" values="lightblue;blue;red;red;black;red;red;purple;lightblue" dur="14s" repeatCount="indefinite" />
+        </stop>
+        <stop offset="100%" stop-color="lightblue" stop-opacity=".5">
+        <animate attributeName="stop-color" values="lightblue;orange;purple;purple;black;purple;purple;blue;lightblue" dur="14s" repeatCount="indefinite" />
+        <animate attributeName="offset" values=".95;.80;.60;.40;.20;0;.20;.40;.60;.80;.95" dur="14s" repeatCount="indefinite" />
+        </stop>
+    </linearGradient>
+    </defs>
+</svg>

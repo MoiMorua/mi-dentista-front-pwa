@@ -11,7 +11,7 @@ const PrivateRoute = ({ tokenP, rol, component: Component, ...rest }) => {
     <Route
       {...rest}
       component={(props) =>
-        localStorage.getItem('token')&&localStorage.getItem('expires_on')&&localStorage.getItem('user')&&localStorage.getItem('date')
+        localStorage.getItem('token')
         ? (
           <Component tokenP={tokenP} props={props} rol = {rol} />
         ) : (
