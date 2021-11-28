@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect,useRef} from 'react'
 import DatePicker from 'react-multi-date-picker';
 import UnavailableDaysRequest from '../../requests/UnavailableDays'
 import DatePanel from "react-multi-date-picker/plugins/date_panel"
@@ -60,6 +60,8 @@ const UnavailableDays = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [afterFirstLoad,setAfterFirstLoad] = useState(false)
+
+    const inputDates = useRef(null)
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -124,25 +126,27 @@ const UnavailableDays = () => {
     const saveDates = async() => {
         let dates = []        
 
-        if(!mode){
-            dates = getDaysArray(new Date(dateListRange[0]),new Date(dateListRange[1]))
-            dates = dates.map((v)=>v.toLocaleString().split(' ')[0].split('/').join('-'))
-        }else{
+        if(dateList.length < 1){
+            toast.warn('Selecciona por lo menos una fecha para continuar', {
+                position: "bottom-left",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
+            inputDates.current.focus()
+            return
+        }
 
-            dateList.forEach(date=>{
-                console.log(new Date(date))
-                console.log(new Date(date).getFullYear())
-                console.log(new Date(date).getMonth())
-                console.log(new Date(date).getDate())
-            })
 
-            dates = dateList.map((v)=>{
-                let dateTmp = new Date(v)
+        dates = dateList.map((v)=>{
+            let dateTmp = new Date(v)
 
-                return `${dateTmp.getFullYear()}-${dateTmp.getMonth()}-${dateTmp.getDate()}`
-            })
-        }             
-        // return 
+            return `${dateTmp.getFullYear()}-${dateTmp.getMonth()<10?`0${dateTmp.getMonth()+1}`:dateTmp.getMonth()+1}-${dateTmp.getDate()}`
+        })
+
         let {status,message} = await UnavailableDaysRequest.saveUnavailableDays(dates)
 
         if(status==="ERROR"){
@@ -209,9 +213,12 @@ const UnavailableDays = () => {
                     
                     <div className="Add-date-container">
                         <DatePicker 
-                            {...mode?{multiple:true}:{range:true}}      
-                            {...mode?{value:dateList}:{value:dateListRange}}                  
-                            {...mode?{onChange:setDateList}:{onChange:setDateListRange}}                                                
+                            ref={inputDates}
+                            multiple={true}      
+                            value={dateList}                  
+                            onChange={(v)=>{                                
+                                setDateList(v)
+                            }}
                             minDate={new Date().setDate(new Date().getDate() + 1)}     
                             plugins={[<DatePanel sort="date" />]}
                         />
