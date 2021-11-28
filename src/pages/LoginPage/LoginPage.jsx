@@ -7,11 +7,14 @@ import {useDispatch, useSelector} from 'react-redux'
 import { selectUser,login } from '../../reducers/UserReducer'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useHistory } from 'react-router'
 import './LoginPage.scss'
 
 const LoginPage = () => {
 
     const mail_regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+    const history = useHistory()
 
     const dispatch = useDispatch()
     const user = useSelector(selectUser)
@@ -56,6 +59,7 @@ const LoginPage = () => {
         if(response.status) {
             User.storeToken({...response,date: new Date()})
             dispatch(login())
+            // history.push('/citas')
             window.location.href = '/citas'
         }        
         
