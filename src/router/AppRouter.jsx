@@ -2,8 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch,Redirect } from 'react-router-dom'
 import PrivateRouter from './private/PrivateRoute'
 import LoginRoute from './login/LoginRoute'
-import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage, AppointmentPage, UnavailableDays } from '../pages'
-import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage, AppointmentPage, UsersPage} from '../pages'
+import {HomePage,LoginPage,ServicePage, PageNotFound, AddClientPage, AppointmentPage, UnavailableDays,UsersPage } from '../pages'
 import {useDispatch} from 'react-redux'
 
 const AppRouter = () => {
