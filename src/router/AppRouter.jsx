@@ -14,7 +14,7 @@ const AppRouter = () => {
             <Router>
                 <Switch>
                     <LoginRoute exact path='/login' component={LoginPage}/>                        
-                    <PrivateRouter exact path='/' component={HomePage}/>                                            
+                    {/* <PrivateRouter exact path='/' component={HomePage}/>                                             */}
                     <PrivateRouter exact path="/servicios" component={ServicePage} />
                     <PrivateRouter exact path="/dias-inhabiles" component={UnavailableDays} />
                     <PrivateRouter exact path="/agregar-cliente" component={AddClientPage} />
