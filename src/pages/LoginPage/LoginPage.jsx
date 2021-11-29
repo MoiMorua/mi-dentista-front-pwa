@@ -55,11 +55,37 @@ const LoginPage = () => {
 
 
         let response = await User.login(email, password)
-        
-        if(response.status) {
-            User.storeToken({...response,date: new Date()})
-            dispatch(login())
-            // history.push('/citas')
+        console.log(response)   
+        // return
+        if(response.status==='ERROR') {
+            toast.warn('El usuario y/o contraseña son incorrectos', {
+                position: "bottom-left",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
+        }else{
+
+            let {user_role} = await User.findMe(response)
+
+            if(user_role===0){
+                toast.warn('No estás autorizado', {
+                    position: "bottom-left",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    });
+                return
+            }
+                    
+            User.storeToken({...response,date: new Date(),user_role})
+            
             window.location.href = '/citas'
         }        
         

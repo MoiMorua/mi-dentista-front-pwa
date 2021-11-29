@@ -4,19 +4,14 @@ import User from '../../requests/User'
 import { useSelector } from "react-redux";
 import { selectUser } from '../../reducers/UserReducer'
 
-const PrivateRoute = ({ tokenP, rol=[], component: Component, ...rest }) => {  
-
-  console.log(rol)
-  console.log(rol.find(r => {    
-    return r == localStorage.getItem('user_role')
-  }
-  ))
+const AssistantRoute = ({ tokenP, rol, component: Component, ...rest }) => {
+  const user = useSelector(selectUser) 
 
   return (
     <Route
       {...rest}
       component={(props) =>
-        localStorage.getItem('token')&&rol.find(r => r == localStorage.getItem('user_role'))
+        localStorage.getItem('token')&&localStorage.getItem('user_role')===2
         ? (
           <Component tokenP={tokenP} props={props} rol = {rol} />
         ) : (
@@ -29,4 +24,4 @@ const PrivateRoute = ({ tokenP, rol=[], component: Component, ...rest }) => {
   );
 };
 
-export default PrivateRoute;
+export default AssistantRoute;

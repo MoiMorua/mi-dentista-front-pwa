@@ -18,11 +18,27 @@ export default {
         ).then(response => response.json())
 
     },
-    storeToken: ({ user, token, expires_on, date }) => {
+    findMe: ({ token }) => {
+
+        return fetch(
+            "http://oscarhendrix10.pythonanywhere.com/user/findme", {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'token': token
+                }
+            }
+
+        ).then(response => response.json())
+
+    },
+    storeToken: ({ user, token, expires_on, date, user_role }) => {
         localStorage.setItem('user', user)
         localStorage.setItem('token', token)
         localStorage.setItem('expires_on', expires_on)
         localStorage.setItem('date', date)
+        localStorage.setItem('user_role', user_role)
     },
     deleteToken: () => {
         localStorage.removeItem('user')
