@@ -15,6 +15,8 @@ const Navbar = (props) => {
 
     const [display, setDisplay] = React.useState(true);
     
+    const [displayAdminRoutes, setDisplayAdminRoutes] = React.useState(false);
+    
     React.useEffect(() => {
         // debugger
         // console.log(location.pathname)
@@ -22,6 +24,9 @@ const Navbar = (props) => {
         if (!localStorage.getItem('token')) {
             setDisplay(false);
         }
+
+        setDisplayAdminRoutes(localStorage.getItem('token')&&localStorage.getItem('user_role') == 1)
+
     }, [])
 
     
@@ -38,22 +43,31 @@ const Navbar = (props) => {
         <>
             {display?
             <nav className="Navbar">                        
-                <ul>                
-                    <li>
-                        <a href="/servicios">Servicios</a>
-                    </li>
-                    <li>
-                        <a href="/dias-inhabiles">Dias inhabiles</a>
-                    </li>
+                <ul>    
+                    {
+                        displayAdminRoutes&&
+                        <li>
+                            <a href="/servicios">Servicios</a>
+                        </li>
+                    }
+                    {
+                        displayAdminRoutes&&
+                        <li>
+                            <a href="/dias-inhabiles">Dias inhabiles</a>
+                        </li>
+                    }
                     <li>                    
                         <a href="/citas">Citas</a>
                     </li>
                     <li>
                         <a href="/pacientes">Pacientes</a>
                     </li>
-                    <li>
-                        <a href="/empleados">Empleados</a>
-                    </li>
+                    {
+                        displayAdminRoutes&&
+                        <li>
+                            <a href="/empleados">Empleados</a>
+                        </li>
+                    }                                
                     <li>
                         <button className="logout-btn" onClick={()=>logout()}>
                             Salir
