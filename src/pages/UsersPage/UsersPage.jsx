@@ -36,6 +36,10 @@ import Loading from '../../atoms/icon/Loading'
 import Copy from '../../components/Copy/Copy';
 import './style.scss'
 import { useLocation } from 'react-router'
+import { Switch } from '@mui/material';
+import { Autocomplete } from '@mui/material';
+
+
 
 const UsersPage = () => {
 
@@ -54,6 +58,7 @@ const UsersPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [afterFirstLoad,setAfterFirstLoad] = useState(false)
     const [showHistory, setShowHistory] = useState(false)
+    const [adminArray, setAdminArray] = useState([])
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -120,11 +125,20 @@ const UsersPage = () => {
         })
 
         if(flag){
-            response = response.filter(user => user.role == 1)
+            response = response.filter(user => user.role != 0)
         } else {
             response = response.filter(user => user.role == 0)
         }
+        
+        let checkState = []
 
+        response.forEach(el=>{
+            checkState.push({
+                isChecked : el.role === 1
+            })
+        })
+
+        setAdminArray(checkState)
 
         dispatchUsers(response)
         setAfterFirstLoad(true)
@@ -164,6 +178,22 @@ const UsersPage = () => {
         const response = await Users.editUser({...currentUsers,...form})        
         hideModal()
         toast.success('Usuario editado con exito', {
+                position: "bottom-left",
+                autoClose: 2500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+        });
+
+        getUsersList()
+    }
+
+    const editUserRole = async (row) => {    
+        const response = await Users.editUser(row)        
+        hideModal()
+        toast.success('Rol actualizado', {
                 position: "bottom-left",
                 autoClose: 2500,
                 hideProgressBar: false,
@@ -219,6 +249,18 @@ const UsersPage = () => {
         setIsLoading(false)
     }
 
+    const updateRole = (e, row) =>{
+        if(row.role === 1){
+            row.role = "assistant"
+        } else {
+            row.role = "admin"
+        }            
+
+        editUserRole(row)
+        getUsersList()
+     }
+  
+
     return (
         <>
             <div className="ServicePage">            
@@ -254,6 +296,10 @@ const UsersPage = () => {
                                 <TableCell align="right">Telefono</TableCell>
                                 <TableCell align="right">Correo</TableCell>
                                 <TableCell align="right">Estatus</TableCell>
+                                {
+                                    flagEmply && (<TableCell align="right">Administrador</TableCell>)
+                                }
+                                
                                 <TableCell align="right"></TableCell>                        
                             </TableRow>
                         </TableHead>
@@ -273,6 +319,19 @@ const UsersPage = () => {
                                     <TableCell align="right">{row.phone}</TableCell>
                                     <TableCell align="right">{row.email}</TableCell>
                                     <TableCell align="right">{row.status}</TableCell>
+                                    {
+                                        flagEmply && (
+                                            <TableCell align="right">
+
+                                            <Switch
+                                                checked={row.role === 1}
+                                                onChange={(e) => updateRole(e,row)}
+                                                value={row.id}
+                                            />
+        
+                                            </TableCell>
+                                        )
+                                    }
                                     <TableCell align="right">                                                                        
                                         <div className="align-center-flex">
                                             <IconButton 

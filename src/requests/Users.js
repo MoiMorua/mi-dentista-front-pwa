@@ -27,7 +27,7 @@ export default {
                  password: user.password,
                  access_code: accessCode,
                  phone: user.phone,
-                 role: flagEmply ? 'admin' : 'Customer',
+                 role: flagEmply ? 'assistant' : 'Customer',
              }),
             }
         ).then(response => response.json())
@@ -75,6 +75,7 @@ export default {
     },
 
     editUser: (user) => {
+        console.log(user);
         return fetch(
                 'http://oscarhendrix10.pythonanywhere.com/user/edit', {
                     method: 'POST',
@@ -92,6 +93,7 @@ export default {
                         lastName: user.lastName,
                         email: user.email,
                         phone: user.phone,
+                        role: user.role,
                     })
                 }
             ).then((response) => response.json())
